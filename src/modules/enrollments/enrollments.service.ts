@@ -69,6 +69,12 @@ export class EnrollmentsService {
         `Course with ID ${createEnrollmentDto.course_id} not exist`,
       );
     }
+
+    // Kiểm tra còn chỗ trong khóa học không
+    if (course.remaining_capacity !== undefined && course.remaining_capacity <= 0) {
+      throw new BadRequestException('This course is fully booked');
+    }
+
     const conflict = await this.checkScheduleConflict(
       createEnrollmentDto.student_id,
       createEnrollmentDto.course_id,
@@ -82,7 +88,19 @@ export class EnrollmentsService {
       await this.enrollmentRepository.create(createEnrollmentDto);
     enrollment.createdAt = new Date();
 
-    return await this.enrollmentRepository.save(enrollment);
+    // Lưu enrollment
+    const savedEnrollment = await this.enrollmentRepository.save(enrollment);
+
+    // Giảm remaining_capacity của course
+    if (course.remaining_capacity !== undefined) {
+      const newRemaining = course.remaining_capacity - 1;
+      await this.coursesService.updateRemaining(
+        createEnrollmentDto.course_id,
+        newRemaining,
+      );
+    }
+
+    return savedEnrollment;
   }
 
   findAll() {
@@ -97,20 +115,34 @@ export class EnrollmentsService {
     return `This action updates a #${id} enrollment`;
   }
 
-  async remove({ student_id, course_id }) {
-    return await this.enrollmentRepository.delete({
-      student_id,
-      course_id,
+  async remove({ studentId, courseId }) {
+    // Lấy thông tin course để tăng lại remaining_capacity
+    const course = await this.coursesService.findOneByCourseID(courseId);
+    
+    const result = await this.enrollmentRepository.delete({
+      student_id: studentId,
+      course_id: courseId,
     });
+
+    // Tăng lại remaining_capacity khi hủy đăng ký
+    if (course && course.remaining_capacity !== undefined) {
+      const newRemaining = course.remaining_capacity + 1;
+      // Không vượt quá capacity ban đầu
+      if (course.capacity === undefined || newRemaining <= course.capacity) {
+        await this.coursesService.updateRemaining(courseId, newRemaining);
+      }
+    }
+
+    return result;
   }
 
-  async findEnrollOfStudentId(student_id: string) {
-    return await this.enrollmentRepository.findBy({ student_id: student_id });
+  async findEnrollOfStudentId(studentId: string) {
+    return await this.enrollmentRepository.findBy({ student_id: studentId });
   }
 
-  async findStudentCoursesWithDetails(student_id: string) {
+  async findStudentCoursesWithDetails(studentId: string) {
     return await this.enrollmentRepository.find({
-      where: { student_id: student_id },
+      where: { student_id: studentId },
       relations: ['course', 'course.schedule', 'course.subject'],
       select: {
         student_id: true,

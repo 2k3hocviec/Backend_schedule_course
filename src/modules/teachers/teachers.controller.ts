@@ -21,7 +21,7 @@ export class TeachersController {
   create(@Body() createTeacherDto: CreateTeacherDto) {
     return this.teachersService.create(createTeacherDto);
   }
-  @Roles('admin')
+  @Roles('admin','teacher')
   @Get()
   findAll() {
     return this.teachersService.findAll();

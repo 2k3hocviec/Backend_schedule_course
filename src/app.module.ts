@@ -36,7 +36,9 @@ import { ChatbotModule } from './chatbot/chatbot.module';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '',
+      // CHÚ Ý: Điền mật khẩu MySQL độc lập của bạn vào đây (ví dụ: '123456')
+      // Vì bạn không còn dùng XAMPP nên không thể để trống chuỗi này được nữa.
+      password: '123456',
       database: 'school',
       entities: [
         User,
@@ -48,11 +50,12 @@ import { ChatbotModule } from './chatbot/chatbot.module';
         Classroom,
         Schedule,
       ],
-      synchronize: true,
+      synchronize: false, // Lưu ý: synchronize=true sẽ tự động sửa bảng DB dựa theo Entity.
       charset: 'utf8mb4',
       logging: ['error'],
-      // logging: true,
     }),
+    // TypeOrmModule.forFeature thường chỉ khai báo trong các module con (như UsersModule),
+    // nhưng để ở đây vẫn hợp lệ nếu AppController/AppService cần gọi trực tiếp tới Entity.
     TypeOrmModule.forFeature([
       User,
       Student,

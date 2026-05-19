@@ -96,3 +96,22 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+gemini-2.5-flash
+
+gemini-2.5-flash-lite: dùng được model
+
+gemini-3.1-flash-lite
+
+Email Configuration
+
+## file .env
+
+GEMINI_API_KEY=key
+GEMINI_MODEL=gemini-3.1-flash-lite
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=khoahoian113@gmail.com
+MAIL_PASSWORD=uzes ktjp xmid aihw
+MAIL_FROM=khoahoian113@gmail.com
+MAIL_FROM_NAME=Hệ Thống Quản Lý

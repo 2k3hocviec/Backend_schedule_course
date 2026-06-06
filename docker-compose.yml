@@ -31,6 +31,19 @@ services:
       timeout: 5s
       retries: 10
 
+  seed:
+    build:
+      context: .
+      target: deps
+    container_name: schedule_course_seed
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/school1?schema=public
+    command: sh -c "npx prisma db push && npm run seed"
+    restart: "no"
+
 volumes:
   postgres_data:
   redis_data:

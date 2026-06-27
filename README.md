@@ -115,3 +115,14 @@ MAIL_USER=khoahoian113@gmail.com
 MAIL_PASSWORD=uzes ktjp xmid aihw
 MAIL_FROM=khoahoian113@gmail.com
 MAIL_FROM_NAME=Hệ Thống Quản Lý
+
+Hướng dẫn 
+
+docker compose up -d
+
+npx prisma db push
+npm run seed database
+npx prisma studio: xem database
+
+
+npm run dev backend
